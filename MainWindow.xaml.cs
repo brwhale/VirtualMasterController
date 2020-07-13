@@ -33,16 +33,16 @@ namespace VirtualMasterController
         public List<ShowListing> Shows = new List<ShowListing>();
         int scrollIndex = 0;
 
-        public List<string> AllowedFormats = new List<string>{ "avi", "mkv", "mp4", "m4v", "ogm", "divx" };
+        public List<string> AllowedFormats = new List<string>{ "avi", "mkv", "mp4", "m4v", "ogm", "divx", "txt" };
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private string getPlaylist(string delim, int skipN = 0)
-        {            
-            string playlist = "";            
+        private List<string> getPlaylist(int skipN = 0)
+        {
+            List<string> playlist = new List<string>();            
             if (Shows.Count > 0)
             {
                 List<countTotal> showIndex = new List<countTotal>();
@@ -51,15 +51,16 @@ namespace VirtualMasterController
                     showIndex.Add(new countTotal(show.Count));
                 }
                 double avgCompletion = 0.0;
+                double epsilon = 0.00000000001;
                 while (avgCompletion != 1.0)
                 {
                     for (int i = 0; i < Shows.Count; i++)
                     {
-                        if (showIndex[i].index < showIndex[i].total && showIndex[i].completion <= avgCompletion)
+                        if (showIndex[i].index < showIndex[i].total && showIndex[i].completion <= avgCompletion + epsilon)
                         {
                             if (skipN == 0)
                             {
-                                playlist += "\"" + Shows[i].episodePaths[showIndex[i].index] + "\"" + delim;
+                                playlist.Add(Shows[i].episodePaths[showIndex[i].index]);
                             }
                             else
                             {
@@ -76,6 +77,17 @@ namespace VirtualMasterController
                     }
                     avgCompletion = complete / showIndex.Count;
                 }
+            }
+            return playlist;
+        }
+
+        private string getPlaylist(string delim, int skipN = 0)
+        {
+            string playlist = "";
+            var eps = getPlaylist(skipN);
+            foreach(var ep in eps)
+            {
+                playlist += ep + delim;
             }
             return playlist;
         }
@@ -154,7 +166,13 @@ namespace VirtualMasterController
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             // use cmd line to add videos to current playlist after starting instead of this
-            System.Diagnostics.Process.Start("C:\\Program Files\\VideoLAN\\VLC\\vlc.exe", getPlaylist(" "));
+            System.Diagnostics.Process.Start("C:\\Program Files\\VideoLAN\\VLC\\vlc.exe", "--one-instance");
+            var playlist = getPlaylist();
+            foreach (var ep in playlist)
+            {
+                System.Threading.Thread.Sleep(60);
+                System.Diagnostics.Process.Start("C:\\Program Files\\VideoLAN\\VLC\\vlc.exe", "--one-instance --playlist-enqueue \"" + ep + "\"");
+            }
         }
 
         private void ShowListBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
