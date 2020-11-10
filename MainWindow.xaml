@@ -8,14 +8,14 @@
         Title="Virtual Master Controller for VLC" Height="450" Width="800"
         AllowDrop="True" Drop="EpisodesTextBox_Drop" DragEnter="EpisodesTextBox_DragEnter">
     <Grid>
-        <TextBlock x:Name="EpisodesTextBox" Margin="267,40,46,93" Text="" TextWrapping="Wrap" MouseWheel="EpisodesTextBox_MouseWheel" Background="#FFF7CDCD" />
+        <TextBlock x:Name="EpisodesTextBox" Margin="267,40,46,93" Text="" TextWrapping="Wrap" MouseWheel="EpisodesTextBox_MouseWheel" Background="#FFF7F1CD" />
         <Button Content="Start!" Margin="323,0,343,23" Height="43" VerticalAlignment="Bottom" FontSize="24" Click="Button_Click"/>
         <ListBox x:Name="ShowListBox"  Margin="22,40,0,93" HorizontalAlignment="Left" Width="240" SelectionChanged="ShowListBox_SelectionChanged" SelectionMode="Multiple">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Title}" Width="150" TextWrapping="Wrap"/>
+                        <StackPanel Orientation="Horizontal" PreviewMouseMove="dragStart" Drop="itemDrop" Tag="{Binding showIndex}">
+                            <TextBlock Text="{Binding Title}" Width="150" TextWrapping="Wrap" />
                             <TextBlock Text="{Binding CountStr}" Width="70"/>
                         </StackPanel>
                     </Grid>
@@ -23,8 +23,7 @@
             </ListBox.ItemTemplate>
 
         </ListBox>
-        <Button x:Name="RemoveButton" Content="Remove" HorizontalAlignment="Left" Margin="22,0,0,68" Height="20" VerticalAlignment="Bottom" Click="RemoveButton_Click"/>
-        <Button x:Name="MergeButton" Content="Merge" HorizontalAlignment="Left" Margin="86,0,0,68" Height="20" VerticalAlignment="Bottom" Click="MergeButton_Click"/>
+        <Button Content="Remove" HorizontalAlignment="Left" Margin="89,0,0,23" Width="77" FontSize="16" Click="RemoveButtonClick" Height="43" VerticalAlignment="Bottom"/>
 
     </Grid>
 </Window>
