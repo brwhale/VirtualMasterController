@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Principal;
 
 namespace VirtualMasterController {
     class Playlist {
@@ -38,6 +36,24 @@ namespace VirtualMasterController {
             foreach(var index in indexes) {
                 Shows.RemoveAt(index);
             }
+        }
+
+        public void Merge(List<int> indexes) {
+            indexes.Sort();
+
+            var show = new ShowListing();
+            foreach (var index in indexes) {
+                show.Title += " + " + Shows[index].Title;
+                show.episodePaths.AddRange(Shows[index].episodePaths);
+            }
+            show.Title = show.Title.Substring(3);
+            indexes.Reverse();            
+
+            foreach (var index in indexes) {
+                Shows.RemoveAt(index);
+            }
+
+            Shows.Insert(indexes.Last(), show);
         }
 
         public ShowListing AddShow(string filename) {

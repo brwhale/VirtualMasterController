@@ -23,7 +23,8 @@
             </ListBox.ItemTemplate>
 
         </ListBox>
-        <Button Content="Remove" HorizontalAlignment="Left" Margin="89,0,0,23" Width="77" FontSize="16" Click="RemoveButtonClick" Height="43" VerticalAlignment="Bottom"/>
+        <Button Content="Remove" HorizontalAlignment="Left" Margin="142,0,0,23" Width="77" FontSize="16" Click="RemoveButtonClick" Height="43" VerticalAlignment="Bottom"/>
+        <Button Content="Merge" HorizontalAlignment="Left" Margin="40,0,0,24" Width="80" Height="42" VerticalAlignment="Bottom" Click="MergeButtonClick"/>
 
     </Grid>
 </Window>

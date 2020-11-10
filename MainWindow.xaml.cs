@@ -8,6 +8,8 @@ using System.Windows.Input;
 namespace VirtualMasterController {
     public partial class MainWindow : Window {
         Playlist playlist = new Playlist();
+        int scrollIndex = 0;
+        string draggedName = "";
 
         public MainWindow() {
             InitializeComponent();
@@ -20,13 +22,11 @@ namespace VirtualMasterController {
                 e.Effects = DragDropEffects.None;
             }
         }
-
-        int scrollIndex = 0;
+        
         private void refreshTextReadout() {
             EpisodesTextBox.Text = playlist.GetPlaylistString("\n", scrollIndex);
         }
-
-        string draggedName = "";
+        
         private void EpisodesTextBox_Drop(object sender, DragEventArgs e) {
             var files = (string[])e.Data.GetData(DataFormats.FileDrop, false);
             if (files != null) {
@@ -75,7 +75,7 @@ namespace VirtualMasterController {
         }
 
         private void Button_Click(object sender, RoutedEventArgs e) {
-            // use cmd line to add videos to current playlist after starting instead of this
+            // use cmd line to add videos to current playlist after starting instead of this?
             System.Diagnostics.Process.Start("C:\\Program Files\\VideoLAN\\VLC\\vlc.exe", "--one-instance");
             var plist = playlist.GetPlaylist();
             foreach (var ep in plist) {
@@ -84,9 +84,7 @@ namespace VirtualMasterController {
             }
         }
 
-        private void ShowListBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
-
-        }
+        private void ShowListBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {}
 
         private void dragStart(object sender, MouseEventArgs e) {
             if (sender is StackPanel && e.LeftButton == MouseButtonState.Pressed) {
@@ -104,6 +102,18 @@ namespace VirtualMasterController {
                 indexes.Add(item.showIndex);
             }
             playlist.Remove(indexes);
+
+            playlist.UpdateUI(ShowListBox);
+            refreshTextReadout();
+        }
+
+        private void MergeButtonClick(object sender, RoutedEventArgs e) {
+            var selected = ShowListBox.SelectedItems;
+            List<int> indexes = new List<int>();
+            foreach (ShowListing item in selected) {
+                indexes.Add(item.showIndex);
+            }
+            playlist.Merge(indexes);
 
             playlist.UpdateUI(ShowListBox);
             refreshTextReadout();
