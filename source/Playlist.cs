@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿// Garrett Skelton 2020
+
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -7,12 +9,20 @@ namespace VirtualMasterController {
         private List<string> AllowedFormats = new List<string> { "avi", "mkv", "mp4", "m4v", "ogm", "divx" };
         private List<ShowListing> Shows = new List<ShowListing>();
 
-        public ShowListing GetShow(string name) {
-            return Shows.Where(s => s.Title == name).FirstOrDefault();
+        private bool IsFileAllowed(string path) {
+            return AllowedFormats.Contains(path.Split(".").Last().ToLower());
+        }
+        public class countTotal {
+            public int index = 0;
+            public int total;
+            public double completion { get { return (double)index / (double)total; } }
+
+            public countTotal(int total_) {
+                total = total_;
+            }
         }
 
         public void MoveToBefore(string a, string b) {
-            //if (a == b) return;
             var indexA = Shows.FindIndex(s => s.Title == a);
             var temp = Shows[indexA];
             Shows.RemoveAt(indexA);
@@ -57,7 +67,7 @@ namespace VirtualMasterController {
         }
 
         public ShowListing AddShow(string filename) {
-            var name = TVShow.getTitle(filename);
+            var name = ShowListing.getTitle(filename);
             var matches = Shows.Where(s => s.Title == name).ToList();
             if (matches.Count > 0) {
                 AddItemOrDirtectory(matches.First(), filename);
@@ -76,6 +86,7 @@ namespace VirtualMasterController {
             return show;
         }
 
+        // sync the listbox that displays the shows
         public void UpdateUI(System.Windows.Controls.ListBox listBox) {
             listBox.Items.Clear();
 
@@ -87,6 +98,7 @@ namespace VirtualMasterController {
             }
         }
 
+        // generate a playlist into a list of the file paths
         public List<string> GetPlaylist(int skipN = 0) {
             List<string> playlist = new List<string>();
             if (Shows.Count > 0) {
@@ -118,6 +130,7 @@ namespace VirtualMasterController {
             return playlist;
         }
 
+        // Get text to display in the playlist box
         public string GetPlaylistString(string delim, int skipN = 0) {
             string playlist = "";
             var eps = GetPlaylist(skipN);
@@ -127,19 +140,21 @@ namespace VirtualMasterController {
             return playlist;
         }
 
+        // Handle paths drag-dropped into the program
+        // if it's a file, we add it, if it's a folder we add it's files recursively
         public void AddItemOrDirtectory(ShowListing show, string fileName) {
             if (Directory.Exists(fileName)) {
-                foreach (var file2 in Directory.GetFiles(fileName)) {
-                    if (AllowedFormats.Contains(file2.Split(".").Last().ToLower())) {
-                        show.episodePaths.Add(file2);
+                foreach (var file in Directory.GetFiles(fileName)) {
+                    if (IsFileAllowed(file)) {
+                        show.episodePaths.Add(file);
                     }
                 }
 
-                foreach (var file2 in Directory.GetDirectories(fileName)) {
-                    AddItemOrDirtectory(show, file2);
+                foreach (var folder in Directory.GetDirectories(fileName)) {
+                    AddItemOrDirtectory(show, folder);
                 }
             } else {
-                if (AllowedFormats.Contains(fileName.Split(".").Last().ToLower())) {
+                if (IsFileAllowed(fileName)) {
                     show.episodePaths.Add(fileName);
                 }
             }
