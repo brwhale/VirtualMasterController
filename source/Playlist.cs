@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace VirtualMasterController {
     class Playlist {
-        private List<string> AllowedFormats = new List<string> { "avi", "mkv", "mp4", "m4v", "ogm", "divx" };
+        private List<string> AllowedFormats = new List<string> { "avi", "mkv", "mp4", "m4v", "ogm", "divx", "m2ts" };
         private List<ShowListing> Shows = new List<ShowListing>();
 
         private bool IsFileAllowed(string path) {
@@ -77,11 +77,13 @@ namespace VirtualMasterController {
             var show = new ShowListing {
                 Title = name,
                 showIndex = Shows.Count
-            };
-
-            Shows.Add(show);
+            };            
 
             AddItemOrDirtectory(show, filename);
+
+            if (show.Count > 0) {
+                Shows.Add(show);
+            }
 
             return show;
         }
